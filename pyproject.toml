@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "todolist"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.7.9"
+uvicorn = "^0.20.0"
+fastapi = "^0.89.0"
+alembic = "^1.9.1"
+sqlalchemy = {extras = ["asyncio"], version = "^1.4.46"}
+aiosqlite = "^0.18.0"
+vue = "^0.0.1"
+javascript = "^1!1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

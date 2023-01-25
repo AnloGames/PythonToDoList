@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Vue</title>
+  </head>
+  <body>
+    <div class="app">
+      <div id="items">
+      </div>
+      <div class="methods">
+        <input type="text" id="noteContent"/>
+        <button onclick="create_update_note()">OK</button>
+        <button onclick="cancel()">Cancel</button><!--OnClick сюда--->
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+  let notes
+  let updated_note_id = 0
+
+  async function load_notes() {
+    let resp = await fetch("http://127.0.0.1:8000/items", {method: 'GET'})
+    notes = await resp.json()
+
+    let note_list = document.getElementById('items')
+
+    for(let i = 0; i < notes.length; i++) {
+        let main_div = document.createElement('div')
+        main_div.classList.add('item')
+        main_div.id = notes[i]['id']
+
+        let checkbox = document.createElement('input')
+        checkbox.type = 'checkbox'
+        checkbox.classList.add('checkbox')
+        checkbox.checked = notes[i]['isChecked']
+        checkbox.onclick = () => change_checkbox_value(notes[i]['id'])
+        main_div.appendChild(checkbox)
+
+        let note_content = document.createElement('div')
+        note_content.textContent = notes[i]['content']
+        main_div.appendChild(note_content)
+
+        let action_div = document.createElement('div')
+        action_div.classList.add('item-action')
+
+        let edit_btn = document.createElement('button')
+        edit_btn.textContent = "edit"
+        edit_btn.onclick = () => choice_updated_note(notes[i]['id'])
+        action_div.appendChild(edit_btn)
+
+        let delete_btn = document.createElement('button')
+        delete_btn.textContent = "delete"
+        delete_btn.onclick = () => delete_note(notes[i]['id'])
+        action_div.appendChild(delete_btn)
+
+        main_div.appendChild(action_div)
+
+        note_list.appendChild(main_div)
+    }
+
+  }
+
+  async function delete_note(note_id) {
+    let resp = await fetch("http://127.0.0.1:8000/items/delete", {
+      method: 'POST',
+      headers:
+      {
+         "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "id": note_id
+      })
+    })
+    let result = await resp
+    let note_list = document.getElementById('items')
+    note_list.innerHTML = ''
+
+    cancel()
+    load_notes()
+
+  }
+  async function create_update_note() {
+    let content_input = document.getElementById("noteContent")
+    let content = content_input.value
+
+    if (updated_note_id == 0) {
+      let resp = await fetch("http://127.0.0.1:8000/items/create", {
+        method: 'POST',
+        headers:
+        {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "content": content
+        })
+      })
+
+    let result = await resp
+    let note_list = document.getElementById('items')
+    note_list.innerHTML = ''
+
+    load_notes()
+    }
+
+
+    else {
+        let note_is_checked
+        let current_note_num
+
+        for(let i = 0; i < notes.length; i++) {
+          if (notes[i]['id'] == updated_note_id) {
+            note_is_checked = notes[i]['isChecked']
+            current_note_num = i
+            break
+          }
+        }
+
+        let resp = await fetch("http://127.0.0.1:8000/items/update", {
+          method: 'POST',
+          headers:
+          {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            "id": updated_note_id,
+            "content": content,
+            "isChecked": note_is_checked
+          })
+        })
+        let result = await resp.json()
+        let note_list = document.getElementById('items')
+        note_list.innerHTML = ''
+
+        load_notes()
+    }
+    cancel()
+  }
+
+  function cancel() {
+    let content_input = document.getElementById("noteContent")
+    content_input.value = ''
+    updated_note_id = 0
+  }
+
+  function choice_updated_note(note_id) {
+    updated_note_id = note_id
+    let note_content
+
+    for(let i = 0; i < notes.length; i++) {
+      if (notes[i]['id'] == updated_note_id) {
+        note_content = notes[i]['content']
+        break
+      }
+    }
+
+    let content_input = document.getElementById("noteContent")
+    content_input.value = note_content
+  }
+
+  async function change_checkbox_value(note_id) {
+      let note_is_checked
+      let note_content
+
+      for(let i = 0; i < notes.length; i++) {
+        if (notes[i]['id'] == note_id) {
+          note_is_checked = notes[i]['isChecked']
+          note_content = notes[i]['content']
+          break
+        }
+      }
+
+      let resp = await fetch("http://127.0.0.1:8000/items/update", {
+      method: 'POST',
+      headers:
+      {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "id": note_id,
+        "content": note_content,
+        "isChecked": !(note_is_checked)
+      })
+    })
+    let result = await resp.json()
+  }
+
+  load_notes()
+</script>
