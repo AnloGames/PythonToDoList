@@ -1,18 +1,15 @@
 import sqlalchemy as sa
 from pydantic import BaseModel
 from sqlalchemy.ext.declarative import declarative_base
-from os import path, curdir
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
-from app import config
+from config import db_url
 
 Base = declarative_base()
 
-eng_path = path.abspath(curdir)
-eng_path = eng_path[0:-3]
-engine = create_async_engine(f"sqlite+aiosqlite:///{eng_path}ToDo.db")
+engine = create_async_engine(db_url)
 
 async_session = sessionmaker(
     engine,

@@ -23,7 +23,6 @@ async def create_item(content: str = Body(..., embed=True), session: AsyncSessio
     note = Note(content=content, isChecked=False)
     session.add(note)
     await session.commit()
-    await session.refresh(note)
     return {'id': note.id, 'content': note.content, 'isChecked': note.isChecked}
 
 
@@ -39,7 +38,7 @@ async def delete_item(id: int = Body(..., embed=True), session: AsyncSession = D
 
 
 @router.post("/items/update")
-async def update_item(note: NoteModel = Body(..., embed=True), session: AsyncSession = Depends(get_session)):
+async def update_item(note: NoteModel = Body(...), session: AsyncSession = Depends(get_session)):
     result = await session.execute(sqlalchemy.select(Note).filter(
         Note.id == note.id
     ))
