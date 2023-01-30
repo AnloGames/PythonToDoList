@@ -1,5 +1,5 @@
 {
-  "name": "htmltodolist",
+  "name": "vuetodolist",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,8 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.2.45",
-    "yarn": "^1.22.19"
+    "vue": "^3.2.45"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

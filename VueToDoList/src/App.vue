@@ -1,17 +1,16 @@
 <template>
-  <div id="app">
     <div class="app">
-      <div id="items">
+      <div id="items" class="items">
       </div>
-      <div class="methods">
+      <div id="methods">
         <input type="text" id="noteContent"/>
-        <button onclick="create_update_note()">OK</button>
-        <button onclick="cancel()">Cancel</button><!--OnClick сюда--->
       </div>
     </div>
 </template>
 
-<script>
+<script setup>
+  import { onMounted } from 'vue'
+
   let notes
   let updated_note_id = 0
 
@@ -181,21 +180,23 @@
     let result = await resp.json()
   }
 
-    onMounted(async () => {
-        load_notes()
-    })
+  onMounted(async () => {
+  let ok_btn = document.createElement('button')
+  ok_btn.textContent = "OK"
+  ok_btn.onclick = () => create_update_note()
+
+  let cancel_btn = document.createElement('button')
+  cancel_btn.textContent = "Cancel"
+  cancel_btn.onclick = () => cancel()
+
+  let methods_div = document.getElementById("methods")
+  methods_div.appendChild(ok_btn)
+  methods_div.appendChild(cancel_btn)
+
+  load_notes()
+})
+
 </script>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+<style>
 </style>
