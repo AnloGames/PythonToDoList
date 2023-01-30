@@ -11,7 +11,6 @@ Base = declarative_base()
 
 eng_path = path.abspath(curdir)
 eng_path = eng_path[0:-3]
-print(eng_path)
 engine = create_async_engine(f"sqlite+aiosqlite:///{eng_path}ToDo.db")
 
 async_session = sessionmaker(
