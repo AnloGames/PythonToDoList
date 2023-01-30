@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body, Response
 from app.dependencies import get_session
-from app.models import Note
+from app.models import Note, NoteModel
 from sqlalchemy.ext.asyncio import AsyncSession
 import sqlalchemy
 
@@ -39,18 +39,18 @@ async def delete_item(id: int = Body(..., embed=True), session: AsyncSession = D
 
 
 @router.post("/items/update")
-async def update_item(id: int = Body(...), content: str = Body(...), isChecked: bool = Body(...) ,session: AsyncSession = Depends(get_session)):
+async def update_item(note: NoteModel = Body(..., embed=True), session: AsyncSession = Depends(get_session)):
     result = await session.execute(sqlalchemy.select(Note).filter(
-        Note.id == id
+        Note.id == note.id
     ))
-    note = result.scalars().first()
-    if not note:
+    db_note = result.scalars().first()
+    if not db_note:
         raise HTTPException(status_code=404, detail="NONE")
     await session.execute(sqlalchemy.update(Note).filter(
-        Note.id == id
-    ).values({'content': content, 'isChecked': isChecked}))
+        Note.id == note.id
+    ).values({'content': note.content, 'isChecked': note.isChecked}))
     await session.commit()
-    return {'id': id, 'content': content, 'isChecked': isChecked}
+    return {'id': note.id, 'content': note.content, 'isChecked': note.isChecked}
 
 
 

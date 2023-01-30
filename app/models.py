@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from pydantic import BaseModel
 from sqlalchemy.ext.declarative import declarative_base
 from os import path, curdir
 
@@ -27,3 +28,8 @@ class Note(Base):
     content = sa.Column(sa.String, nullable=False)
     isChecked = sa.Column(sa.Boolean, nullable=False)
 
+
+class NoteModel(BaseModel):
+    id: int
+    content: str
+    isChecked: bool

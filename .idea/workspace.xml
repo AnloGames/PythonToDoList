@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8b919e6f-6289-419b-b2c5-6cf661d498ac" name="Changes" comment="">
+    <list default="true" id="8b919e6f-6289-419b-b2c5-6cf661d498ac" name="Changes" comment="Всё работает_2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ToDo.db" beforeDir="false" afterPath="$PROJECT_DIR$/ToDo.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes.py" afterDir="false" />
     </list>
@@ -60,6 +56,18 @@
       <option name="presentableId" value="Default" />
       <updated>1673376032187</updated>
     </task>
+    <task id="LOCAL-00001" summary="Всё работает_2">
+      <created>1675088552011</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1675088552011</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Всё работает_2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Всё работает_2" />
   </component>
 </project>
