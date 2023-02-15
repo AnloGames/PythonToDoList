@@ -17,6 +17,12 @@
 
   let notes
   let updated_note_id = 0
+  var note_list = new Vue({
+    el: '#item',
+    data: {
+        Notes: notes
+    }
+  })
 
   async function load_notes() {
     let resp = await fetch("http://127.0.0.1:8000/items", {method: 'GET'})
@@ -148,12 +154,6 @@
   }
 
   onMounted(async () => {
-    var note_list = new Vue({
-    el: '#item',
-    data: {
-        Notes: notes
-    }
-  })
   let ok_btn = document.createElement('button')
   ok_btn.textContent = "OK"
   ok_btn.onclick = () => create_update_note()
