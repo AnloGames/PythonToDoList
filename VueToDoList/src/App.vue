@@ -1,6 +1,9 @@
 <template>
     <div class="app">
       <div id="items" class="items">
+        <div id="item" v-for="note in Notes">
+            {{note}}
+        </div>
       </div>
       <div id="methods">
         <input type="text" id="noteContent"/>
@@ -9,6 +12,7 @@
 </template>
 
 <script setup>
+  import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.esm.browser.js'
   import { onMounted } from 'vue'
 
   let notes
@@ -17,43 +21,6 @@
   async function load_notes() {
     let resp = await fetch("http://127.0.0.1:8000/items", {method: 'GET'})
     notes = await resp.json()
-
-    let note_list = document.getElementById('items')
-
-    for(let i = 0; i < notes.length; i++) {
-        let main_div = document.createElement('div')
-        main_div.classList.add('item')
-        main_div.id = notes[i]['id']
-
-        let checkbox = document.createElement('input')
-        checkbox.type = 'checkbox'
-        checkbox.classList.add('checkbox')
-        checkbox.checked = notes[i]['isChecked']
-        checkbox.onclick = () => change_checkbox_value(notes[i]['id'])
-        main_div.appendChild(checkbox)
-
-        let note_content = document.createElement('div')
-        note_content.textContent = notes[i]['content']
-        main_div.appendChild(note_content)
-
-        let action_div = document.createElement('div')
-        action_div.classList.add('item-action')
-
-        let edit_btn = document.createElement('button')
-        edit_btn.textContent = "edit"
-        edit_btn.onclick = () => choice_updated_note(notes[i]['id'])
-        action_div.appendChild(edit_btn)
-
-        let delete_btn = document.createElement('button')
-        delete_btn.textContent = "delete"
-        delete_btn.onclick = () => delete_note(notes[i]['id'])
-        action_div.appendChild(delete_btn)
-
-        main_div.appendChild(action_div)
-
-        note_list.appendChild(main_div)
-    }
-
   }
 
   async function delete_note(note_id) {
@@ -181,6 +148,12 @@
   }
 
   onMounted(async () => {
+    var note_list = new Vue({
+    el: '#item',
+    data: {
+        Notes: notes
+    }
+  })
   let ok_btn = document.createElement('button')
   ok_btn.textContent = "OK"
   ok_btn.onclick = () => create_update_note()
