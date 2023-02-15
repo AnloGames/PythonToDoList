@@ -1,33 +1,32 @@
 <template>
     <div class="app">
-      <div id="items" class="items">
-        <div id="item" v-for="note in Notes">
-            {{note}}
+      <div class="items">
+        <div v-for="note in notes">
+            <div class="content">
+                <input type="checkbox" v-model="note.isChecked" @click="change_checkbox_value(note.id)"/>
+                {{note.content}}
+            </div>
+            <div class="methods">
+                <button @click="choice_updated_note(note.id)">Edit</button>
+                <button @click="delete_note(note.id)">Delete</button>
+            </div>
         </div>
       </div>
-      <div id="methods">
-        <input type="text" id="noteContent"/>
+      <div>
+        <input type="text" v-model="main_input_content"/>
+        <button @click="create_update_note">OK</button>
+        <button @click="cancel">Cancel</button>
       </div>
     </div>
 </template>
 
 <script setup>
-  import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.esm.browser.js'
+  import { ref } from 'vue'
   import { onMounted } from 'vue'
 
-  let notes
+  let notes = ref([])
+  let main_input_content = ref("")
   let updated_note_id = 0
-  var note_list = new Vue({
-    el: '#item',
-    data: {
-        Notes: notes
-    }
-  })
-
-  async function load_notes() {
-    let resp = await fetch("http://127.0.0.1:8000/items", {method: 'GET'})
-    notes = await resp.json()
-  }
 
   async function delete_note(note_id) {
     let resp = await fetch("http://127.0.0.1:8000/items/delete", {
@@ -41,17 +40,20 @@
       })
     })
     let result = await resp
-    let note_list = document.getElementById('items')
-    note_list.innerHTML = ''
+    let current_note_num
+
+    for(let i = 0; i < notes.value.length; i++) {
+      if (notes.value[i]['id'] == note_id) {
+        current_note_num = i
+        break
+      }
+    }
+    notes.value.splice(current_note_num, 1)
 
     cancel()
-    load_notes()
 
   }
   async function create_update_note() {
-    let content_input = document.getElementById("noteContent")
-    let content = content_input.value
-
     if (updated_note_id == 0) {
       let resp = await fetch("http://127.0.0.1:8000/items/create", {
         method: 'POST',
@@ -60,25 +62,21 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          "content": content
+          "content": main_input_content.value
         })
       })
 
-    let result = await resp
-    let note_list = document.getElementById('items')
-    note_list.innerHTML = ''
+    let result = await resp.json()
+    notes.value.push(result)
 
-    load_notes()
     }
-
-
     else {
         let note_is_checked
         let current_note_num
 
-        for(let i = 0; i < notes.length; i++) {
-          if (notes[i]['id'] == updated_note_id) {
-            note_is_checked = notes[i]['isChecked']
+        for(let i = 0; i < notes.value.length; i++) {
+          if (notes.value[i]['id'] == updated_note_id) {
+            note_is_checked = notes.value[i]['isChecked']
             current_note_num = i
             break
           }
@@ -92,52 +90,49 @@
           },
           body: JSON.stringify({
             "id": updated_note_id,
-            "content": content,
+            "content": main_input_content.value,
             "isChecked": note_is_checked
           })
         })
         let result = await resp.json()
-        let note_list = document.getElementById('items')
-        note_list.innerHTML = ''
+        notes.value[current_note_num] = result
 
-        load_notes()
     }
     cancel()
   }
 
   function cancel() {
-    let content_input = document.getElementById("noteContent")
-    content_input.value = ''
     updated_note_id = 0
+    main_input_content.value = ''
   }
 
   function choice_updated_note(note_id) {
-    updated_note_id = note_id
     let note_content
 
-    for(let i = 0; i < notes.length; i++) {
-      if (notes[i]['id'] == updated_note_id) {
-        note_content = notes[i]['content']
+    for(let i = 0; i < notes.value.length; i++) {
+      if (notes.value[i].id == note_id) {
+        note_content = notes.value[i].content
         break
       }
     }
 
-    let content_input = document.getElementById("noteContent")
-    content_input.value = note_content
+    updated_note_id = note_id
+    main_input_content.value = note_content
   }
 
   async function change_checkbox_value(note_id) {
       let note_is_checked
       let note_content
+      let current_note_num
 
-      for(let i = 0; i < notes.length; i++) {
-        if (notes[i]['id'] == note_id) {
-          note_is_checked = notes[i]['isChecked']
-          note_content = notes[i]['content']
+      for(let i = 0; i < notes.value.length; i++) {
+        if (notes.value[i]['id'] == note_id) {
+          note_is_checked = notes.value[i]['isChecked']
+          note_content = notes.value[i]['content']
+          current_note_num = i
           break
         }
       }
-
       let resp = await fetch("http://127.0.0.1:8000/items/update", {
       method: 'POST',
       headers:
@@ -154,19 +149,11 @@
   }
 
   onMounted(async () => {
-  let ok_btn = document.createElement('button')
-  ok_btn.textContent = "OK"
-  ok_btn.onclick = () => create_update_note()
-
-  let cancel_btn = document.createElement('button')
-  cancel_btn.textContent = "Cancel"
-  cancel_btn.onclick = () => cancel()
-
-  let methods_div = document.getElementById("methods")
-  methods_div.appendChild(ok_btn)
-  methods_div.appendChild(cancel_btn)
-
-  load_notes()
+    let resp = await fetch("http://127.0.0.1:8000/items", {method: 'GET'})
+    let list = await resp.json()
+    for (var id in list){
+        notes.value.push(list[id])
+    }
 })
 
 </script>
